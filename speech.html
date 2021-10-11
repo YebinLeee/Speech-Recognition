@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" type="text/css" href="speech.css"> 
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>    
+		<p id="ola">Speak now</p>
+		<div id="transcription"></div>
+ 
+		<button id="rect">
+    <i class="fa fa-microphone"></i>
+    </button>
+ 
+	    <span id="unsupported" class="hidden">API가 지원되지 않음</span>
+    <script>
+
+        window.SpeechRecognition = window.SpeechRecognition       ||
+                                    window.webkitSpeechRecognition ||
+                                    null;
+    
+            // speechRecognition API 지원 안되는 경우                             
+            if (window.SpeechRecognition === null) {
+                document.getElementById('unsupported').classList.remove('hidden');
+            }else {
+                var recognizer = new window.SpeechRecognition();
+                var transcription = document.getElementById("transcription");
+                recognizer.continuous = true
+                recognizer.onresult = function(event){
+                    transcription.textContent = "";
+                    for (var i = event.resultIndex; i < event.results.length; i++) {
+                        if(event.results[i].isFinal){
+                            transcription.textContent = event.results[i][0].transcript+' ((Hit Rate) : ' + event.results[i][0].confidence + ')';
+                        }else{
+                            transcription.textContent += event.results[i][0].transcript;
+                        }
+                    }
+                }
+                document.querySelector("#rect").addEventListener("click",function(){
+                    try {
+                        recognizer.start();
+                    } catch(ex) {
+                        alert("에러 발생: "+ex.message);
+                    }
+                });
+            }
+        </script>
+
+</body>
+</html>
